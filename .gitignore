@@ -1,0 +1,13 @@
+.vs/
+**/bin/
+**/obj/
+**/AppPackages/
+artifacts/
+*.cer
+*.pfx
+*.pdb
+*.user
+/Microsoft.CommandPalette.Extensions.dll
+/.github/copilot-instructions.md
+/.github/instructions/
+/.github/skills/

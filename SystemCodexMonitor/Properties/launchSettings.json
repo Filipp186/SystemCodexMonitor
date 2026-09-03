@@ -1,0 +1,11 @@
+{
+  "profiles": {
+    "SystemCodexMonitor (Package)": {
+      "commandName": "MsixPackage",
+      "doNotLaunchApp": true
+    },
+    "SystemCodexMonitor (Unpackaged)": {
+      "commandName": "Project"
+    }
+  }
+}
