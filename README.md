@@ -25,7 +25,7 @@ CPU, RAM, and GPU temperatures are read from AIDA64 shared memory. Hardware load
 
 ## Install
 
-1. Download `SystemCodexMonitor-v0.1.0-win-x64.zip` from [Releases](https://github.com/Filipp186/SystemCodexMonitor/releases/latest).
+1. Download `SystemCodexMonitor-v0.1.1-win-x64.zip` from [Releases](https://github.com/Filipp186/SystemCodexMonitor/releases/latest).
 2. Extract the ZIP.
 3. Run `Install.cmd`.
 4. Open Command Palette settings, enable **System & Codex Monitor**, then enable the **System sensors** and **Codex limit** Dock bands.
@@ -47,7 +47,7 @@ dotnet build SystemCodexMonitor.sln -c Release -p:Platform=x64
 Create a distributable ZIP:
 
 ```powershell
-.\scripts\New-Release.ps1 -Version 0.1.0
+.\scripts\New-Release.ps1 -Version 0.1.1
 ```
 
 ## Notes

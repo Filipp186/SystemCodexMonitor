@@ -6,6 +6,7 @@ namespace SystemCodexMonitor;
 internal sealed partial class CodexMetricItem : ListItem, IDisposable
 {
     private readonly CodexRateLimitService _service;
+    private readonly System.Timers.Timer _displayTimer;
 
     public CodexMetricItem(CodexRateLimitService service)
         : base(new NoOpCommand())
@@ -13,10 +14,19 @@ internal sealed partial class CodexMetricItem : ListItem, IDisposable
         _service = service;
         Icon = IconHelpers.FromRelativePath("Assets\\CodexLogo.png");
         _service.Updated += OnUpdated;
+        _displayTimer = new System.Timers.Timer(60_000) { AutoReset = true };
+        _displayTimer.Elapsed += OnDisplayTimerElapsed;
         Apply(_service.Snapshot);
+        _displayTimer.Start();
     }
 
-    public void Dispose() => _service.Updated -= OnUpdated;
+    public void Dispose()
+    {
+        _displayTimer.Stop();
+        _displayTimer.Elapsed -= OnDisplayTimerElapsed;
+        _displayTimer.Dispose();
+        _service.Updated -= OnUpdated;
+    }
 
     internal static string FormatTitle(CodexLimitSnapshot value)
     {
@@ -25,7 +35,7 @@ internal sealed partial class CodexMetricItem : ListItem, IDisposable
             return value.Error is null ? "Codex …" : "Codex —";
         }
 
-        return $"{value.Primary.RemainingPercent:0}%";
+        return $"{value.Primary.RemainingPercent:0}% {FormatResetCountdown(value.Primary)}";
     }
 
     internal static string FormatSubtitle(CodexLimitSnapshot value)
@@ -71,7 +81,30 @@ internal sealed partial class CodexMetricItem : ListItem, IDisposable
         return $"{minutes}m";
     }
 
+    private static string FormatResetCountdown(CodexLimitWindow value)
+    {
+        var remaining = DateTimeOffset.FromUnixTimeSeconds(value.ResetsAt) - DateTimeOffset.UtcNow;
+        if (remaining <= TimeSpan.Zero)
+        {
+            return "0m";
+        }
+
+        if (remaining.TotalDays >= 1)
+        {
+            return $"{Math.Ceiling(remaining.TotalDays):0}d";
+        }
+
+        if (remaining.TotalHours >= 1)
+        {
+            return $"{Math.Ceiling(remaining.TotalHours):0}h";
+        }
+
+        return $"{Math.Ceiling(remaining.TotalMinutes):0}m";
+    }
+
     private void OnUpdated(object? sender, EventArgs e) => Apply(_service.Snapshot);
+
+    private void OnDisplayTimerElapsed(object? sender, EventArgs e) => Apply(_service.Snapshot);
 
     private void Apply(CodexLimitSnapshot value)
     {
