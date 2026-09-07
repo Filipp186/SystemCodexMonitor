@@ -4,12 +4,12 @@
 
 [English](README.md)
 
-Неофициальное расширение для панели Microsoft PowerToys Command Palette. Оно компактно показывает семь параметров под четырьмя значками:
+Неофициальное расширение для панели Microsoft PowerToys Command Palette. Оно компактно показывает восемь параметров под четырьмя значками:
 
 - оставшийся лимит Codex;
 - температуру и загрузку CPU;
 - температуру модулей RAM и загрузку физической памяти;
-- температуру и загрузку GPU.
+- температуру, загрузку GPU и занятую видеопамять.
 
 Значения отображаются в одну строку. При наведении видны подписи, подробности и время сброса лимита Codex.
 
@@ -25,7 +25,7 @@
 
 ## Установка
 
-1. Скачайте `SystemCodexMonitor-v0.1.1-win-x64.zip` на странице [Releases](https://github.com/Filipp186/SystemCodexMonitor/releases/latest).
+1. Скачайте `SystemCodexMonitor-v0.1.2-win-x64.zip` на странице [Releases](https://github.com/Filipp186/SystemCodexMonitor/releases/latest).
 2. Распакуйте архив.
 3. Запустите `Install.cmd`.
 4. В настройках Command Palette включите **System & Codex Monitor**, затем добавьте в Dock полосы **System sensors** и **Codex limit**.
@@ -47,7 +47,7 @@ dotnet build SystemCodexMonitor.sln -c Release -p:Platform=x64
 Создание ZIP-релиза:
 
 ```powershell
-.\scripts\New-Release.ps1 -Version 0.1.1
+.\scripts\New-Release.ps1 -Version 0.1.2
 ```
 
 ## Примечания

@@ -45,7 +45,7 @@ internal sealed partial class HardwareMetricItem : ListItem, IDisposable
 
     internal static string FormatGpu(HardwareSnapshot value)
     {
-        return $"GPU {Temperature(value.GpuTemperature)} · {Percent(value.GpuLoad)}";
+        return $"GPU {Temperature(value.GpuTemperature)} · {Percent(value.GpuLoad)} · VRAM {Percent(value.GpuMemoryLoad)}";
     }
 
     private static string Temperature(float? value) => value is null ? "—°C" : $"{value.Value:0}°C";
@@ -60,7 +60,7 @@ internal sealed partial class HardwareMetricItem : ListItem, IDisposable
         {
             HardwareMetric.Cpu => $"{Temperature(value.CpuTemperature)} {Percent(value.CpuLoad)}",
             HardwareMetric.Memory => $"{Temperature(value.MemoryTemperature)} {Percent(value.MemoryLoad)}",
-            _ => $"{Temperature(value.GpuTemperature)} {Percent(value.GpuLoad)}",
+            _ => $"{Temperature(value.GpuTemperature)} {Percent(value.GpuLoad)} {Percent(value.GpuMemoryLoad)}",
         };
         Subtitle = _metric switch
         {

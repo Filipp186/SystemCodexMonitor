@@ -4,12 +4,12 @@
 
 [Русская версия](README.ru.md)
 
-An unofficial extension for the Microsoft PowerToys Command Palette Dock. It keeps seven live values in a compact four-icon band:
+An unofficial extension for the Microsoft PowerToys Command Palette Dock. It keeps eight live values in a compact four-icon band:
 
 - Codex remaining usage limit;
 - CPU package temperature and load;
 - RAM DIMM temperature and physical-memory load;
-- GPU temperature and load.
+- GPU temperature, load, and VRAM usage.
 
 Values are shown on one line. Hover an item to see labeled details and Codex reset times.
 
@@ -25,7 +25,7 @@ CPU, RAM, and GPU temperatures are read from AIDA64 shared memory. Hardware load
 
 ## Install
 
-1. Download `SystemCodexMonitor-v0.1.1-win-x64.zip` from [Releases](https://github.com/Filipp186/SystemCodexMonitor/releases/latest).
+1. Download `SystemCodexMonitor-v0.1.2-win-x64.zip` from [Releases](https://github.com/Filipp186/SystemCodexMonitor/releases/latest).
 2. Extract the ZIP.
 3. Run `Install.cmd`.
 4. Open Command Palette settings, enable **System & Codex Monitor**, then enable the **System sensors** and **Codex limit** Dock bands.
@@ -47,7 +47,7 @@ dotnet build SystemCodexMonitor.sln -c Release -p:Platform=x64
 Create a distributable ZIP:
 
 ```powershell
-.\scripts\New-Release.ps1 -Version 0.1.1
+.\scripts\New-Release.ps1 -Version 0.1.2
 ```
 
 ## Notes

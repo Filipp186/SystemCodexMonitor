@@ -84,7 +84,8 @@ internal sealed partial class HardwareMonitorService : IDisposable
                 MemoryLoad: Preferred(physicalMemorySensors, SensorType.Load, "Memory"),
                 MemoryTemperature: aida.Memory ?? PreferredMemoryTemperature(sensors),
                 GpuTemperature: aida.Gpu ?? Preferred(gpuSensors, SensorType.Temperature, "GPU Core", "Core", "Hot Spot"),
-                GpuLoad: Preferred(gpuSensors, SensorType.Load, "GPU Core", "Core", "D3D 3D"));
+                GpuLoad: Preferred(gpuSensors, SensorType.Load, "GPU Core", "Core", "D3D 3D"),
+                GpuMemoryLoad: Exact(gpuSensors, SensorType.Load, "GPU Memory"));
 
             lock (_sync)
             {
@@ -142,6 +143,15 @@ internal sealed partial class HardwareMonitorService : IDisposable
         return matches.FirstOrDefault()?.Value;
     }
 
+    private static float? Exact(IEnumerable<ISensor> sensors, SensorType type, string name)
+    {
+        return sensors
+            .FirstOrDefault(sensor => sensor.SensorType == type
+                && sensor.Value is not null
+                && sensor.Name.Equals(name, StringComparison.OrdinalIgnoreCase))
+            ?.Value;
+    }
+
     private static float? PreferredMemoryTemperature(IEnumerable<ISensor> sensors)
     {
         return sensors
@@ -165,7 +175,8 @@ internal sealed record HardwareSnapshot(
     float? MemoryLoad,
     float? MemoryTemperature,
     float? GpuTemperature,
-    float? GpuLoad)
+    float? GpuLoad,
+    float? GpuMemoryLoad)
 {
-    public static HardwareSnapshot Empty { get; } = new(null, null, null, null, null, null);
+    public static HardwareSnapshot Empty { get; } = new(null, null, null, null, null, null, null);
 }
