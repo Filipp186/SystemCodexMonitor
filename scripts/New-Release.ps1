@@ -28,6 +28,14 @@ if ($LASTEXITCODE -ne 0) {
     throw 'dotnet publish failed.'
 }
 
+$winRtRuntime = Join-Path $publishRoot 'WinRT.Runtime.dll'
+try {
+    [Reflection.AssemblyName]::GetAssemblyName($winRtRuntime) | Out-Null
+}
+catch {
+    throw 'The published WinRT.Runtime.dll is not loadable. ReadyToRun must remain disabled.'
+}
+
 $generatedManifest = Get-ChildItem (Join-Path $repositoryRoot 'SystemCodexMonitor\bin\x64\Release') `
     -Recurse -Filter 'AppxManifest.xml' |
     Sort-Object LastWriteTime -Descending |
