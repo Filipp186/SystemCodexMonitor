@@ -25,13 +25,13 @@
 
 ## Установка
 
-1. Скачайте `SystemCodexMonitor-v0.1.3-win-x64.zip` на странице [Releases](https://github.com/Filipp186/SystemCodexMonitor/releases/latest).
+1. Скачайте `SystemCodexMonitor-v0.1.4-win-x64.zip` на странице [Releases](https://github.com/Filipp186/SystemCodexMonitor/releases/latest).
 2. Распакуйте архив.
 3. Запустите `Install.cmd`.
 4. В настройках Command Palette включите **System & Codex Monitor**, затем добавьте в Dock полосы **System sensors** и **Codex limit**.
 5. В режиме редактирования Dock отключите субтитры, чтобы оставить компактную строку.
 
-Установщик копирует приложение в `%LOCALAPPDATA%\Programs\SystemCodexMonitor`. После установки распакованный архив можно удалить.
+Установщик копирует приложение в `%LOCALAPPDATA%\Programs\SystemCodexMonitor`. Также он добавляет отложенную проверку после входа в Windows: Command Palette перезапускается только если окно Dock не появилось после инициализации мониторов. После установки распакованный архив можно удалить.
 
 Для удаления запустите `Uninstall.cmd` из архива релиза.
 
@@ -47,7 +47,7 @@ dotnet build SystemCodexMonitor.sln -c Release -p:Platform=x64
 Создание ZIP-релиза:
 
 ```powershell
-.\scripts\New-Release.ps1 -Version 0.1.3
+.\scripts\New-Release.ps1 -Version 0.1.4
 ```
 
 ## Примечания

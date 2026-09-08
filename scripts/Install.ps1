@@ -3,6 +3,7 @@ $ErrorActionPreference = 'Stop'
 $source = Join-Path $PSScriptRoot 'app'
 $programsRoot = [IO.Path]::GetFullPath((Join-Path $env:LOCALAPPDATA 'Programs'))
 $installRoot = [IO.Path]::GetFullPath((Join-Path $programsRoot 'SystemCodexMonitor'))
+$startupTaskName = 'SystemCodexMonitor Dock Startup'
 
 if (-not (Test-Path -LiteralPath (Join-Path $source 'AppxManifest.xml'))) {
     throw 'The app payload is missing. Extract the complete release ZIP before installing.'
@@ -34,7 +35,16 @@ if (Test-Path -LiteralPath $installRoot) {
 
 New-Item -ItemType Directory -Path $installRoot -Force | Out-Null
 Copy-Item -Path (Join-Path $source '*') -Destination $installRoot -Recurse -Force
+Copy-Item -LiteralPath (Join-Path $PSScriptRoot 'Ensure-DockStartup.ps1') -Destination $installRoot -Force
 Add-AppxPackage -Register (Join-Path $installRoot 'AppxManifest.xml') -ForceApplicationShutdown
 
-Start-Process explorer.exe 'shell:AppsFolder\Microsoft.CommandPalette_8wekyb3d8bbwe!App'
+$startupScript = Join-Path $installRoot 'Ensure-DockStartup.ps1'
+$powershell = Join-Path $env:SystemRoot 'System32\WindowsPowerShell\v1.0\powershell.exe'
+$action = New-ScheduledTaskAction -Execute $powershell -Argument "-NoProfile -WindowStyle Hidden -ExecutionPolicy Bypass -File `"$startupScript`""
+$trigger = New-ScheduledTaskTrigger -AtLogOn -User "$env:USERDOMAIN\$env:USERNAME"
+$trigger.Delay = 'PT2M'
+$settings = New-ScheduledTaskSettingsSet -StartWhenAvailable -AllowStartIfOnBatteries -DontStopIfGoingOnBatteries -ExecutionTimeLimit (New-TimeSpan -Minutes 3)
+Register-ScheduledTask -TaskName $startupTaskName -Action $action -Trigger $trigger -Settings $settings -Description 'Ensures that the Command Palette Dock is visible after display initialization.' -Force | Out-Null
+
+Start-Process 'x-cmdpal://background'
 Write-Host 'System & Codex Monitor installed successfully.' -ForegroundColor Green

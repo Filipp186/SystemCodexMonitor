@@ -48,7 +48,7 @@ Copy-Item -LiteralPath $generatedManifest.FullName -Destination (Join-Path $publ
 
 New-Item -ItemType Directory -Path (Join-Path $releaseRoot 'app') -Force | Out-Null
 Copy-Item -Path (Join-Path $publishRoot '*') -Destination (Join-Path $releaseRoot 'app') -Recurse -Force
-Copy-Item -LiteralPath (Join-Path $PSScriptRoot 'Install.ps1'), (Join-Path $PSScriptRoot 'Install.cmd'), (Join-Path $PSScriptRoot 'Uninstall.ps1'), (Join-Path $PSScriptRoot 'Uninstall.cmd') -Destination $releaseRoot
+Copy-Item -LiteralPath (Join-Path $PSScriptRoot 'Install.ps1'), (Join-Path $PSScriptRoot 'Install.cmd'), (Join-Path $PSScriptRoot 'Uninstall.ps1'), (Join-Path $PSScriptRoot 'Uninstall.cmd'), (Join-Path $PSScriptRoot 'Ensure-DockStartup.ps1') -Destination $releaseRoot
 Copy-Item -LiteralPath (Join-Path $repositoryRoot 'README.ru.md'), (Join-Path $repositoryRoot 'LICENSE'), (Join-Path $repositoryRoot 'THIRD-PARTY-NOTICES.md') -Destination $releaseRoot
 Copy-Item -LiteralPath (Join-Path $repositoryRoot 'LICENSES') -Destination $releaseRoot -Recurse
 

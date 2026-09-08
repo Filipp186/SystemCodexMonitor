@@ -25,13 +25,13 @@ CPU, RAM, and GPU temperatures are read from AIDA64 shared memory. Hardware load
 
 ## Install
 
-1. Download `SystemCodexMonitor-v0.1.3-win-x64.zip` from [Releases](https://github.com/Filipp186/SystemCodexMonitor/releases/latest).
+1. Download `SystemCodexMonitor-v0.1.4-win-x64.zip` from [Releases](https://github.com/Filipp186/SystemCodexMonitor/releases/latest).
 2. Extract the ZIP.
 3. Run `Install.cmd`.
 4. Open Command Palette settings, enable **System & Codex Monitor**, then enable the **System sensors** and **Codex limit** Dock bands.
 5. In Dock edit mode, disable subtitles for the compact one-line layout.
 
-The installer copies the application to `%LOCALAPPDATA%\Programs\SystemCodexMonitor`. The extracted ZIP can then be deleted.
+The installer copies the application to `%LOCALAPPDATA%\Programs\SystemCodexMonitor`. It also registers a delayed logon check that restarts Command Palette only when its Dock window did not appear after display initialization. The extracted ZIP can then be deleted.
 
 To remove the extension, run `Uninstall.cmd` from the release ZIP.
 
@@ -47,7 +47,7 @@ dotnet build SystemCodexMonitor.sln -c Release -p:Platform=x64
 Create a distributable ZIP:
 
 ```powershell
-.\scripts\New-Release.ps1 -Version 0.1.3
+.\scripts\New-Release.ps1 -Version 0.1.4
 ```
 
 ## Notes
