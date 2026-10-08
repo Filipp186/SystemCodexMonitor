@@ -7,6 +7,11 @@ artifacts/
 *.pfx
 *.pdb
 *.user
+.env
+.env.*
+*.pem
+*.key
+*.log
 /Microsoft.CommandPalette.Extensions.dll
 /.github/copilot-instructions.md
 /.github/instructions/

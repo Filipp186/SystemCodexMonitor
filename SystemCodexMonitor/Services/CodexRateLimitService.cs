@@ -79,7 +79,9 @@ internal sealed partial class CodexRateLimitService : IDisposable
         {
             StartInfo = new ProcessStartInfo
             {
-                FileName = FindCodexExecutable(),
+                FileName = FindCodexExecutable(
+                    Environment.GetFolderPath(Environment.SpecialFolder.UserProfile),
+                    Environment.GetEnvironmentVariable("PATH")),
                 Arguments = "app-server",
                 UseShellExecute = false,
                 RedirectStandardInput = true,
@@ -89,12 +91,18 @@ internal sealed partial class CodexRateLimitService : IDisposable
             },
         };
 
+        using var stderrCancellation = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
+        var stderrDrain = Task.CompletedTask;
+        var started = false;
         try
         {
             if (!process.Start())
             {
                 throw new InvalidOperationException("Codex app-server did not start");
             }
+
+            started = true;
+            stderrDrain = DrainStandardErrorAsync(process.StandardError, stderrCancellation.Token);
 
             await process.StandardInput.WriteLineAsync("{\"method\":\"initialize\",\"id\":0,\"params\":{\"clientInfo\":{\"name\":\"system_codex_monitor\",\"title\":\"System Codex Monitor\",\"version\":\"0.1.0\"}}}").ConfigureAwait(false);
             await process.StandardInput.WriteLineAsync("{\"method\":\"initialized\",\"params\":{}}").ConfigureAwait(false);
@@ -132,11 +140,36 @@ internal sealed partial class CodexRateLimitService : IDisposable
         }
         finally
         {
-            if (!process.HasExited)
+            if (started)
             {
-                process.Kill(entireProcessTree: true);
+                try
+                {
+                    if (!process.HasExited)
+                    {
+                        process.Kill(entireProcessTree: true);
+                    }
+                }
+                catch (InvalidOperationException) { }
+                catch (System.ComponentModel.Win32Exception) { }
+            }
+
+            stderrCancellation.Cancel();
+            await stderrDrain.ConfigureAwait(false);
+        }
+    }
+
+    private static async Task DrainStandardErrorAsync(StreamReader reader, CancellationToken cancellationToken)
+    {
+        var buffer = new char[4096];
+        try
+        {
+            while (await reader.ReadAsync(buffer.AsMemory(), cancellationToken).ConfigureAwait(false) != 0)
+            {
+                // Discard diagnostics without retaining unbounded child output.
             }
         }
+        catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested) { }
+        catch (IOException) { }
     }
 
     private static CodexLimitWindow? ReadWindow(JsonElement limits, string propertyName)
@@ -152,15 +185,35 @@ internal sealed partial class CodexRateLimitService : IDisposable
         return new CodexLimitWindow(Math.Clamp(100 - used, 0, 100), duration, reset);
     }
 
-    private static string FindCodexExecutable()
+    private static string FindCodexExecutable(string userProfile, string? searchPath)
     {
         var preferred = Path.Combine(
-            Environment.GetFolderPath(Environment.SpecialFolder.UserProfile),
+            userProfile,
             ".codex",
             "plugins",
             ".plugin-appserver",
             "codex.exe");
-        return File.Exists(preferred) ? preferred : "codex.exe";
+        if (Path.IsPathFullyQualified(preferred) && File.Exists(preferred))
+        {
+            return preferred;
+        }
+
+        foreach (var entry in (searchPath ?? "").Split(Path.PathSeparator))
+        {
+            var directory = entry.Trim().Trim('"');
+            if (!Path.IsPathFullyQualified(directory))
+            {
+                continue;
+            }
+
+            var candidate = Path.Combine(directory, "codex.exe");
+            if (File.Exists(candidate))
+            {
+                return candidate;
+            }
+        }
+
+        throw new FileNotFoundException("Codex executable was not found in the plugin directory or absolute PATH directories.");
     }
 
     private void SetError(string error)

@@ -1,0 +1,12 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net10.0-windows</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="../../SystemCodexMonitor/Services/CodexRateLimitService.cs" Link="CodexRateLimitService.cs" />
+    <Compile Include="../../SystemCodexMonitor/Services/Aida64SensorReader.cs" Link="Aida64SensorReader.cs" />
+  </ItemGroup>
+</Project>

@@ -6,6 +6,7 @@ namespace SystemCodexMonitor;
 
 internal static class Aida64SensorReader
 {
+    private const long MaxSensorBytes = 1024 * 1024;
     private static readonly string[] MapNames = ["Global\\AIDA64_SensorValues", "AIDA64_SensorValues"];
 
     public static Aida64Temperatures Read()
@@ -16,6 +17,11 @@ internal static class Aida64SensorReader
             {
                 using var map = MemoryMappedFile.OpenExisting(mapName, MemoryMappedFileRights.Read);
                 using var stream = map.CreateViewStream(0, 0, MemoryMappedFileAccess.Read);
+                if (stream.Length > MaxSensorBytes)
+                {
+                    continue;
+                }
+
                 using var reader = new StreamReader(stream);
                 var xml = reader.ReadToEnd().TrimEnd('\0');
                 var values = XDocument.Parse($"<root>{xml}</root>")
@@ -48,10 +54,11 @@ internal static class Aida64SensorReader
     {
         if (float.TryParse(value, NumberStyles.Float, CultureInfo.InvariantCulture, out var invariant))
         {
-            return invariant;
+            return float.IsFinite(invariant) && invariant is >= -100 and <= 200 ? invariant : null;
         }
 
         return float.TryParse(value, NumberStyles.Float, CultureInfo.CurrentCulture, out var current)
+            && float.IsFinite(current) && current is >= -100 and <= 200
             ? current
             : null;
     }
